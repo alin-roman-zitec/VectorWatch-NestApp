@@ -146,6 +146,18 @@ NestApi.prototype.getAllThermostats = function(accessToken) {
     });
 };
 
+NestApi.prototype.getThermostat = function(thermostatId, accessToken) {
+    return this.getAll(accessToken).then(function(all) {
+        return all.devices.thermostats[thermostatId];
+    });
+};
+
+NestApi.prototype.getTemperatureScale = function(thermostatId, accessToken) {
+    return this.getThermostat(thermostatId, accessToken).then(function(thermostat) {
+        return (thermostat && thermostat.temperature_scale || 'c').toLowerCase();
+    });
+};
+
 NestApi.prototype.getCurrentTemperature = function(thermostatId, scale, accessToken) {
     return this.get('devices/thermostats/' + thermostatId + '/ambient_temperature_' + scale, accessToken);
 };

@@ -148,7 +148,9 @@ var RemoteMethods = {
     },
     getCurrentTemp: function(accessToken, options) {
         return getLabelById(options.id).then(function(thermostatId) {
-            return nestApi.getCurrentTemperature(thermostatId, 'c', accessToken);
+            return nestApi.getTemperatureScale(thermostatId, accessToken).then(function(scale) {
+                return nestApi.getCurrentTemperature(thermostatId, scale, accessToken);
+            });
         }).then(function(temp) {
             return {
                 type: 'number',
@@ -158,7 +160,9 @@ var RemoteMethods = {
     },
     getTargetTemp: function(accessToken, options) {
         return getLabelById(options.id).then(function(thermostatId) {
-            return nestApi.getTargetTemperature(thermostatId, 'c', accessToken);
+            return nestApi.getTemperatureScale(thermostatId, accessToken).then(function(scale) {
+                return nestApi.getTargetTemperature(thermostatId, scale, accessToken);
+            });
         }).then(function(temp) {
             return {
                 type: 'number',
@@ -168,7 +172,9 @@ var RemoteMethods = {
     },
     getTemp: function(accessToken, options) {
         return getLabelById(options.id).then(function(thermostatId) {
-            return nestApi.getTemperature(thermostatId, 'c', accessToken);
+            return nestApi.getTemperatureScale(thermostatId, accessToken).then(function(scale) {
+                return nestApi.getTemperature(thermostatId, scale, accessToken);
+            });
         }).then(function(temps) {
             return {
                 type: 'gauge_element',
@@ -179,11 +185,11 @@ var RemoteMethods = {
     },
     setTargetTemp: function(accessToken, options) {
         return getLabelById(options.id).then(function(thermostatId) {
-            return nestApi.setTargetTemperature(thermostatId, 'c', options.value, accessToken).then(function() {
-                return thermostatId;
+            return nestApi.getTemperatureScale(thermostatId, accessToken).then(function(scale) {
+                return nestApi.setTargetTemperature(thermostatId, scale, options.value, accessToken).then(function() {
+                    return nestApi.getTemperature(thermostatId, scale, accessToken);
+                });
             });
-        }).then(function(thermostatId) {
-            return nestApi.getTemperature(thermostatId, 'c', accessToken);
         }).then(function(temps) {
             return {
                 type: 'gauge_element',
